@@ -1,0 +1,10 @@
+---
+# tasks file for rd_install_haproxy
+#
+# Purpose: Install HAProxy
+#
+
+- name: Include task to install haproxy
+  include: install.yml
+
+

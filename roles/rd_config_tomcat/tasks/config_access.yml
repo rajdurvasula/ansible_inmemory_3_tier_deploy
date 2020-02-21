@@ -1,0 +1,15 @@
+---
+#
+# Task to configure Tomcat access
+#
+
+- name: Enable Tomcat admin user
+  blockinfile:
+    path: "{{ tomcat_users }}"
+    marker: "<!-- {mark} Ansible Managed Block -->"
+    block: |
+      <role rolename="admin"/>
+      <role rolename="manager-gui"/>
+      <user username="{{ tomcat_admin }}" password="{{ tomcat_admin_password }}" roles="manager-gui,admin,standard,manager"/>
+    insertbefore: "</tomcat-users>"
+    backup: yes

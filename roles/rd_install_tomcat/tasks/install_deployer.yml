@@ -1,0 +1,32 @@
+---
+#
+# Install Tomcat Client Deployer
+#
+
+- name: Download Tomcat Client Deployer tar ball
+  get_url:
+    url: "{{ download_tomcat_deployer_url }}"
+    dest: "{{ usr_share }}/{{ tomcat_deployer_file }}"
+   
+- name: Extract Deployer tar ball
+  unarchive:
+    src: "{{ usr_share }}/{{ tomcat_deployer_file }}"
+    dest: "{{ usr_share }}"
+    remote_src: yes
+
+- name: Fix Client Deployer build.xml
+  template:
+    src: build.xml
+    dest: "{{ tomcat_deployer_dir }}/build.xml"
+    backup: yes
+
+- name: Copy deploy.sh script
+  template:
+    src: deploy.sh.j2
+    dest: "{{ tomcat_deployer_dir }}/deploy.sh"
+    mode: 0755
+
+- name: Remove Tomcat Client Deployer tar ball
+  file:
+    path: "{{ usr_share }}/{{ tomcat_deployer_file }}"
+    state: absent

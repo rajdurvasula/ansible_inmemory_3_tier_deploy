@@ -1,0 +1,12 @@
+---
+# tasks file for rd_install_haproxy
+#
+# Purpose: Install HAProxy
+#
+
+- name: install HAProxy
+  package:
+    name: haproxy
+    state: latest
+  notify:
+    - enable_start_haproxy

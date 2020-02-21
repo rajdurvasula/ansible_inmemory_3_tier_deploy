@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<Resource name="jdbc/EmpDS" auth="Container" type="javax.sql.DataSource"
+	driverClassName="org.postgresql.Driver" url="jdbc:postgresql://{{groups['appdbs'][0]}}:{{db_listen_port}}/{{app_db_name}}"
+	username="{{app_user}}" password="{{app_password}}"/>
+</Context>

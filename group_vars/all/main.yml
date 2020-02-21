@@ -1,0 +1,29 @@
+---
+# defaults file for rd_osp_provisioner
+
+app_metadata: "group=apps,deployment_name=QA"
+db_metadata: "group=appdbs,deployment_name=QA"
+frontend_metadata: "group=frontends,deployment_name=QA"
+cloud_name: ospcloud
+default_flavor: m2.small
+default_image: rhel-guest
+
+# Access Security
+default_keypair: ansible_ssh
+app_security_group: apps
+db_security_group: db
+frontend_security_group: frontend
+
+# Networks
+int_network: int_network
+ext_network: ext_network
+
+# 3-Tier application
+#GUID: dd15
+repo_file: project.repo
+
+# DB users
+admin_user: postgres
+admin_password: passw0rd
+app_user: guest1
+app_password: passw0rd

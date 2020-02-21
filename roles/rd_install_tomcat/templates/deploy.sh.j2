@@ -1,0 +1,6 @@
+#!/bin/bash
+JARS=""
+for x in `find {{ tomcat_lib_dir }} -name '*.jar'`; do
+  JARS=$JARS:$x
+done
+export CLASSPATH=$JARS:.

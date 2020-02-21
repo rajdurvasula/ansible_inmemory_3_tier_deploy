@@ -1,0 +1,24 @@
+---
+#
+# Task to configure application
+#
+
+- name: create /usr/share/tomcat/webapps/ansible directory
+  file:
+    path: /usr/share/tomcat/webapps/ansible
+    state: directory
+    recurse: yes
+
+- name: copy static index.html to tomcat webapps/ansible/index.html for app1
+  template:
+    src: index.html.app1
+    dest: /usr/share/tomcat/webapps/ansible/index.html
+  when:
+    - inventory_hostname is search('app1.*.internal')
+
+- name: copy static index.html to tomcat webapps/ansible/index.html for app2
+  template:
+    src: index.html.app2
+    dest: /usr/share/tomcat/webapps/ansible/index.html
+  when:
+    - inventory_hostname is search('app2.*.internal')

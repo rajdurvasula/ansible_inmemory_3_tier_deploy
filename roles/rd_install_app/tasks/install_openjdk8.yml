@@ -1,0 +1,10 @@
+---
+#
+# Task to install OpenJDK 8
+#
+
+- name: Install OpenJDK 8
+  package:
+    name: java-1.8.0-openjdk-devel
+    state: latest
+

@@ -1,0 +1,13 @@
+---
+# tasks file for rd_install_tomcat
+#
+
+- name: Include Install Task
+  include: install.yml
+
+- name: Include Task to install Apache Ant
+  include: install_ant.yml
+
+- name: Include Task to install Tomcat Deployer
+  include: install_deployer.yml
+

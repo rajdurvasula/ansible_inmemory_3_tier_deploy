@@ -1,0 +1,28 @@
+---
+# tasks file for get_osp_instance_data
+#
+
+- name: Get Server Facts
+  os_server_facts:
+    cloud: "{{cloud_name}}"
+  register: server_facts
+
+- name: Add In-memory Host
+  add_host:
+    name: "{{item.public_v4}}"
+    group: "{{item.metadata.group}}"
+  with_items: "{{server_facts.ansible_facts.openstack_servers}}"
+
+- name: Add In-memory Host Group
+  add_host:
+    name: "{{item.public_v4}}"
+    group: "{{item.metadata.deployment_name}}"
+  with_items: "{{server_facts.ansible_facts.openstack_servers}}"
+
+- name: Print In-memory Hosts
+  debug:
+    msg: "{{item}}"
+  with_items:
+    - "{{groups['apps'][0]}}"
+    - "{{groups['apps'][1]}}"
+

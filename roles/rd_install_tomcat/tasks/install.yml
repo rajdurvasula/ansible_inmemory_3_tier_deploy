@@ -1,0 +1,12 @@
+---
+# tasks file for rd_install_tomcat
+#
+
+- name: Install tomcat package
+  package:
+    name: "{{ tomcat_packages }}"
+    state: latest
+  notify:
+    - enable_tomcat
+    - start_tomcat
+

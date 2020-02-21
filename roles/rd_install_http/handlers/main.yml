@@ -1,0 +1,14 @@
+---
+# handlers file for rd_install_http
+#
+
+- name: enable_httpd
+  service:
+    name: httpd
+    enabled: yes
+
+- name: start_httpd
+  service:
+    name: httpd
+    state: started
+

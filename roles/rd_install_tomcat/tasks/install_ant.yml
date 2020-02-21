@@ -1,0 +1,38 @@
+---
+#
+# Install Apache Ant
+#
+
+- name: Download Apache Ant tar ball
+  get_url:
+    url: "{{ download_apache_ant_installer_url }}"
+    dest: "{{ usr_share }}/{{ apache_ant_file }}"
+
+- name: Extract Apache Ant tar ball
+  unarchive:
+    src: "{{ usr_share }}/{{ apache_ant_file }}"
+    dest: "{{ usr_share }}"
+    remote_src: yes
+
+- name: Copy ANT environment variables script
+  copy:
+    content: "export ANT_HOME={{ apache_ant_dir }}"
+    dest: /root/ant_env.sh
+    mode: 0755
+
+- name: Update ANT environment variables script
+  lineinfile:
+    path: /root/ant_env.sh
+    line: "export PATH=$PATH:$ANT_HOME/bin"
+    insertafter: EOF
+
+- name: Update .bashrc
+  lineinfile:
+    path: "/root/.bashrc"
+    line: ". /root/ant_env.sh"
+    insertafter: EOF
+
+- name: Remove Apache Ant tar ball
+  file:
+    path: "{{ usr_share }}/{{ apache_ant_file }}"
+    state: absent

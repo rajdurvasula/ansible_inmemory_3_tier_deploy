@@ -1,0 +1,7 @@
+---
+# tasks file for rd_setup_appdb
+#
+
+- name: Include Task to setup PostgreSQL DB
+  include: install_postgres.yml
+

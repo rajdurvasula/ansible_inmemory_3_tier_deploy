@@ -1,0 +1,10 @@
+---
+# tasks file for rd_config_app
+#
+
+- name: Include task to add static index.html
+  include: config.yml
+
+- name: Include task to configure Application
+  include: config_app.yml
+

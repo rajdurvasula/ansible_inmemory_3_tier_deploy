@@ -1,0 +1,17 @@
+---
+#
+# Task to configure Tomcat
+#
+
+- name: create ansible tomcat directory
+  file:
+    path: /usr/share/tomcat/webapps/ROOT
+    state: directory
+    recurse: yes
+
+- name: copy static index.html to tomcat directory
+  template:
+    src: index.html.j2
+    dest: /usr/share/tomcat/webapps/ROOT/index.html
+    mode: 0644
+

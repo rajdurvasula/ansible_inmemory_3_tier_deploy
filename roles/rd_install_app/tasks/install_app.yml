@@ -1,0 +1,24 @@
+---
+#
+# Task to install Application
+#
+
+- name: Copy Application Git key
+  copy:
+    src: "files/{{ git_app_key_file }}"
+    dest: "/root/{{ git_app_key_file }}"
+
+- name: Make application directory for build
+  file:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}"
+    state: directory
+    recurse: yes
+    force: yes
+
+- name: Git clone Application
+  git:
+    repo: "{{ git_app_repo }}"
+    dest: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}"
+    key_file: "/root/{{ git_app_key_file }}"
+    clone: yes
+

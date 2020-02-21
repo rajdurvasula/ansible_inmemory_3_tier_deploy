@@ -1,0 +1,10 @@
+---
+# tasks file for rd_install_http
+
+- name: Install http package
+  package:
+    name: httpd
+    state: latest
+  notify:
+    - enable_httpd
+    - start_httpd 

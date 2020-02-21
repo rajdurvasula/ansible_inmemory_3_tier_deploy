@@ -1,0 +1,101 @@
+---
+# tasks file for rd_osp_provisioner
+#
+
+- name: Get Flavor id
+  os_flavor_info:
+    name: "{{default_flavor}}"
+    cloud: "{{cloud_name}}"
+  register: flavor_info
+
+#- name: Print Flavor Id
+#  debug:
+#    msg: "Flavor Name: {{default_flavor}}, Flavor Id: {{ flavor_info | json_query(query1) }}"
+#  vars:
+#    query1: "openstack_flavors[0].id"
+
+- name: Set fact for Flavor Id
+  set_fact:
+    flavor_id: "{{ flavor_info | json_query(query1) }}"
+  vars:
+    query1: "openstack_flavors[0].id"
+
+- name: Get Image Id
+  os_image_info:
+    image: "{{default_image}}"
+    cloud: "{{cloud_name}}"
+  register: image_info
+
+#- name: Print Image Id
+#  debug:
+#    msg: "Image Name: {{default_image}}, Image Id: {{ image_info | json_query(query1) }}"
+#  vars:
+#    query1: "openstack_image.id"
+
+- name: Set fact for Image Id
+  set_fact:
+    image_id: "{{ image_info | json_query(query1) }}"
+  vars:
+    query1: "openstack_image.id"
+
+- name: Get Keypair Id
+  os_keypair:
+    name: "{{default_keypair}}"
+    cloud: "{{cloud_name}}"
+  register: keypair_info
+
+- name: Set facts for apps VM
+  set_fact:
+    curr_security_group: "{{app_security_group}}"
+    curr_metadata: "{{app_metadata}}"
+    vm_name: "{{ui_vm_name}}"
+  when:
+    - vm_type == "apps"
+
+- name: Set facts for db VM
+  set_fact:
+    curr_security_group: "{{db_security_group}}"
+    curr_metadata: "{{db_metadata}}"
+    vm_name: "{{ui_vm_name}}"
+  when:
+    - vm_type == "db"
+
+- name: Set facts for frontend VM
+  set_fact:
+    curr_security_group: "{{frontend_security_group}}"
+    curr_metadata: "{{frontend_metadata}}"
+    vm_name: "{{ui_vm_name}}"
+  when:
+    - vm_type == "frontend"
+
+- name: Provision instance of type "{{vm_type}}"
+  os_server:
+    name: "{{vm_name}}"
+    flavor: "{{flavor_id}}"
+    image: "{{image_id}}"
+    key_name: "{{default_keypair}}"
+    security_groups: "{{curr_security_group}}"
+    network: "{{int_network}}"
+    meta: "{{curr_metadata}}"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+      curl -o /tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+      cp /tmp/internal.repo /etc/yum.repos.d/internal.repo
+  register: server_info
+
+- name: Print Server Info
+  debug:
+     msg: "{{server_info | json_query('id') }}"
+
+- name: Attach Floating IPs. Waits for 60 seconds
+  os_floating_ip:
+    cloud: "{{cloud_name}}"
+    state: present
+    reuse: yes
+    server: "{{vm_name}}"
+    network: "{{ext_network}}"
+    wait: true
+    timeout: 60
+

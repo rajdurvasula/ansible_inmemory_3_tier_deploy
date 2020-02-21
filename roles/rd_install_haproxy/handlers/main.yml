@@ -1,0 +1,11 @@
+---
+# handlers file for rd_install_haproxy
+#
+
+- name: enable_start_haproxy
+  service:
+    name: haproxy
+    enabled: yes
+    state: started
+
+

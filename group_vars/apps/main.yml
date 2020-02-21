@@ -1,0 +1,41 @@
+---
+# PostgreSQL
+download_postgresql_jdbc_driver_url: https://jdbc.postgresql.org/download/postgresql-42.2.10.jar
+postgres_jdbc_driver_file: "{{ download_postgresql_jdbc_driver_url | basename }}"
+postgres_home: /var/lib/pgsql
+postgres_jdbc_dir: "{{postgres_home}}/jdbc"
+postgres_user:
+  id: 26
+  name: postgres
+postgres_group:
+  id: 26
+  name: postgres
+
+usr_share: /usr/share
+# Tomcat
+tomcat_packages:
+  - tomcat
+  - tomcat-webapps
+  - tomcat-admin-webapps
+catalina_home: /usr/share/tomcat
+tomcat_admin: admin
+tomcat_admin_password: admin
+tomcat_lib_dir: /usr/share/java/tomcat
+tomcat_users: "{{ catalina_home }}/conf/tomcat-users.xml"
+download_tomcat_deployer_url: http://mirrors.estointernet.in/apache/tomcat/tomcat-7/v7.0.100/bin/apache-tomcat-7.0.100-deployer.tar.gz
+tomcat_deployer_file: "{{ download_tomcat_deployer_url | basename }}"
+tomcat_deployer_dir: "{{ usr_share }}/{{ tomcat_deployer_file.split('.tar')[0] }}"
+
+# Ant
+download_apache_ant_installer_url: http://mirrors.estointernet.in/apache//ant/binaries/apache-ant-1.9.14-bin.tar.gz
+apache_ant_file: "{{ download_apache_ant_installer_url | basename }}"
+apache_ant_dir: "{{ usr_share }}/apache-ant-1.9.14"
+
+# Application
+APP_NAME: EmployeeCRUD
+git_app_repo: "https://github.com/rajdurvasula/{{ APP_NAME }}.git"
+git_app_key_file: rd_git_key1
+app_db_name: empdb
+app_user: guest1
+app_password: passw0rd
+db_listen_port: 5432

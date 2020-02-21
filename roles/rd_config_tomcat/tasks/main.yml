@@ -1,0 +1,9 @@
+---
+# tasks file for rd_config_tomcat
+#
+
+- name: Include task to configure tomcat
+  include: config.yml
+
+- name: Include task to configure tomcat access
+  include: config_access.yml

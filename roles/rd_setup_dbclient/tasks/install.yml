@@ -1,0 +1,32 @@
+---
+# tasks file for rd_setup_dbclient
+#
+
+- name: Create PostgreSQL group
+  group:
+    name: "{{postgres_group.name}}"
+    gid: "{{postgres_group.id}}"
+    state: present
+
+- name: Create PostgresQL user
+  user:
+    name: "{{postgres_user.name}}"
+    uid: "{{postgres_user.id}}"
+    group: "{{postgres_group.name}}"
+    home: "{{postgres_home}}"
+
+- name: Create Directory for PostgreSQL JDBC Driver
+  file:
+    path: "{{postgres_jdbc_dir}}"
+    state: directory
+    recurse: yes
+    owner: "{{postgres_user.name}}"
+    group: "{{postgres_group.name}}"
+
+- name: Include task to Install PostgreSQL JDBC Driver
+  get_url:
+    url: "{{download_postgresql_jdbc_driver_url}}"
+    dest: "{{postgres_jdbc_dir}}"
+    owner: "{{postgres_user.name}}"
+    group: "{{postgres_group.name}}"
+

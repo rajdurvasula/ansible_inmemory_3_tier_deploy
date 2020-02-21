@@ -1,0 +1,14 @@
+---
+# handlers file for rd_install_tomcat
+#
+
+- name: enable_tomcat
+  service:
+    name: tomcat
+    enabled: yes
+
+- name: start_tomcat
+  service:
+    name: tomcat
+    state: started
+

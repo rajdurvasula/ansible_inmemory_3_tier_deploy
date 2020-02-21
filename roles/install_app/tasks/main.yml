@@ -1,0 +1,9 @@
+---
+# tasks file for install_app
+
+- name: Clone Ansible playbook for 3-Tier app automation
+  git:
+    repo: "{{ automation_git_repo }}"
+    dest: roles/
+    key_file: "{{ git_key }}"
+    clone: yes

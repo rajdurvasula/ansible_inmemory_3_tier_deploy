@@ -1,0 +1,93 @@
+---
+#
+# Task to Configure Application
+#
+
+- name: Replace DB host
+  replace:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}/WebContent/WEB-INF/web.xml"
+    regexp: "localhost"
+    replace: "{{ groups['appdbs'][0] }}"
+
+- name: Replace DB listen port
+  replace:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}/WebContent/WEB-INF/web.xml"
+    regexp: "5432"
+    replace: "{{ db_listen_port }}"
+
+- name: Replace Application DB user
+  replace:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}/WebContent/WEB-INF/web.xml"
+    regexp: "guest1"
+    replace: "{{ app_user }}"
+
+- name: Replace Application DB name
+  replace:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}/WebContent/WEB-INF/web.xml"
+    regexp: "sampledb"
+    replace: "{{ app_db_name }}"
+
+- name: Replace Application DB user password
+  replace:
+    path: "{{ tomcat_deployer_dir }}/{{ APP_NAME }}/WebContent/WEB-INF/web.xml"
+    regexp: "passw0rd"
+    replace: "{{ app_password }}"
+
+- name: Copy deployer.properties
+  template:
+    src: deployer.properties.j2
+    dest: "{{ tomcat_deployer_dir }}/deployer.properties"
+    force: yes
+
+- name: Update deploy script
+  lineinfile:
+    path: "{{ tomcat_deployer_dir }}/deploy.sh"
+    line: "{{ item }}"
+    insertafter: EOF
+  with_items:
+    - "export CLASSPATH=$CLASSPATH:build/webapp/{{ APP_NAME }}/build/classes"
+    - "ant -Dwebapp={{ APP_NAME }} -Dpath=/{{ APP_NAME }} compile"
+
+- name: Run deploy script
+  shell: |
+    source /root/.bashrc ;
+    cd "{{ tomcat_deployer_dir }}" ;
+    "{{ tomcat_deployer_dir }}/deploy.sh"
+  args:
+    executable: /bin/bash
+
+- name: Copy web files
+  copy:
+    src: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}/WebContent/{{item}}"
+    dest: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}/{{item}}"
+    remote_src: yes
+  with_items:
+    - create.jsp
+    - index.html
+    - list_employees.jsp
+    - view.jsp
+
+- name: Copy classes directory
+  copy:
+    src: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}/build/classes"
+    dest: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}/WEB-INF"
+    remote_src: yes
+
+- name: Copy META-INF directory
+  copy:
+    src: "{{ tomcat_deployer_dir }}/{{APP_NAME}}/META-INF"
+    dest: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}"
+    remote_src: yes
+
+- name: Copy PostgreSQL JDBC Driver jar to {{APP_NAME}} lib directory
+  copy:
+    src: "{{ postgres_jdbc_dir }}/{{ postgres_jdbc_driver_file }}"
+    dest: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}/WEB-INF/lib"
+    remote_src: yes
+
+- name: Deploy {{APP_NAME}}
+  copy:
+    src: "{{ tomcat_deployer_dir }}/build/webapp/{{APP_NAME}}"
+    dest: "{{catalina_home}}/webapps/"
+    remote_src: yes
+

@@ -1,0 +1,37 @@
+---
+#
+# Tasks to install PostgreSQL server
+#
+
+- name: Include Role to install PostgreSQL Server
+  package:
+    name: postgresql-server
+    state: latest
+
+- name: Check {{pg_data}}/pg_hba.conf exists
+  stat:
+    path: "{{pg_data}}/pg_hba.conf"
+  register: pg_data_status
+
+- name: Set fact on first-time install
+  set_fact:
+    pg_first_install: yes
+  when:
+    - not pg_data_status.stat.exists
+
+- name: Initialize database
+  command: postgresql-setup initdb
+  when:
+    - not pg_data_status.stat.exists
+
+- name: Enable and start PostgreSQL
+  service:
+    name: postgresql
+    enabled: yes
+    state: started
+
+- name: Include task to execute first-install actions
+  include: first_install_actions.yml
+  when:
+    - pg_first_install is defined
+

@@ -1,0 +1,14 @@
+---
+defaultdb: sampledb
+admin_user: postgres
+admin_password: passw0rd
+app_user: guest1
+app_password: passw0rd
+
+pg_home: /var/lib/pgsql
+pg_data: "{{pg_home}}/data"
+postgres_user: postgres
+postgres_group: postgres
+
+# Application
+app_db_name: empdb

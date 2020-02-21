@@ -1,0 +1,38 @@
+---
+#
+# Task to configure Application Database scripts
+#
+
+- name: Copy Application DB scripts
+  template:
+    src: app_db.sql.j2
+    dest: /var/lib/pgsql/app_db.sql
+    owner: postgres
+    group: postgres
+
+- name: Run Application DB scripts
+  shell: |
+    /bin/psql -h localhost -U {{ admin_user }} -f /var/lib/pgsql/app_db.sql
+  environment:
+    PGPASSWORD: "{{ admin_password }}"
+  args:
+    executable: /bin/bash
+  become_user: postgres
+
+- name: Copy Application Schema scripts
+  template:
+    src: app_schema.sql.j2
+    dest: /var/lib/pgsql/app_schema.sql
+    owner: postgres
+    group: postgres
+
+- name: Run Application Schema scripts
+  shell: |
+    "export PG_PASSWORD={{ app_password }}"
+    /bin/psql -h localhost -U {{ app_user }} {{ app_db_name }} -f /var/lib/pgsql/app_schema.sql
+  args:
+    executable: /bin/bash
+  environment:
+    PGPASSWORD: "{{ app_password }}"
+  become_user: postgres
+

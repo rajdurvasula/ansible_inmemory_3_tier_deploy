@@ -1,0 +1,50 @@
+---
+#
+# Task to be executed on first install of PostgreSQL
+#
+
+- name: Copy pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{pg_data}}/pg_hba.conf"
+    owner: "{{postgres_user}}"
+    group: "{{postgres_group}}"
+    backup: yes
+
+- name: Copy script to set password for postgres user
+  template:
+    src: postgres_password.sql.j2
+    dest: /var/lib/pgsql/postgres_password.sql
+    owner: postgres
+    group: postgres
+
+- name: Copy sql file to create DB users
+  template:
+    src: db_users.sql.j2
+    dest: /var/lib/pgsql/db_users.sql
+    owner: postgres
+    group: postgres
+
+- name: Set postgres user password
+  command: /bin/psql -f /var/lib/pgsql/postgres_password.sql
+  become_user: postgres
+
+- name: Create DB users
+  command: /bin/psql -f /var/lib/pgsql/db_users.sql
+  become_user: postgres
+
+- name: Listen on all addresses
+  lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^#listen_addresses'
+    insertafter: '^#listen_addresses'
+    line: "listen_addresses = '*'"
+    backup: yes
+    owner: postgres
+    group: postgres
+
+- name: Restart PostgreSQL
+  service:
+    name: postgresql
+    state: restarted
+

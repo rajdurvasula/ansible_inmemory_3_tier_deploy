@@ -1,0 +1,6 @@
+---
+# tasks file for rd_config_haproxy
+#
+
+- name: Include task for basic configuration
+  include: config.yml

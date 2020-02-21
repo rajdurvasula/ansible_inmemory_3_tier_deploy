@@ -1,0 +1,10 @@
+---
+# tasks file for rd_config_haproxy
+#
+
+- name: configure HAProxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify:
+    - restart_haproxy

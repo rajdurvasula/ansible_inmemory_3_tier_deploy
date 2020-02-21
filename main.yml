@@ -1,0 +1,61 @@
+---
+#
+# Playbook for OSP instance provisioning
+#
+- name: Playbook to provision OSP instance
+  hosts: jumpbox
+  become: true
+
+  pre_tasks:
+    - name: Check pre-requisite parameters
+      block:
+        - name: Check vm_type exists
+          fail:
+            msg: "Argument vm_type is Mandatory"
+          when: vm_type is not defined
+        - name: Check ui_vm_name exists
+          fail:
+            msg: "Argument ui_vm_name exists"
+          when: ui_vm_name is not defined
+  roles:
+    - { role: rd_osp_provisioner, tags: provision }
+
+- name: Get OSP Instance Facts
+  hosts: jumpbox
+  become: true
+
+  roles:
+    - { role: get_osp_instance_data, tags: install_app }
+
+- name: Playbook for common tasks on all hosts
+  hosts: QA
+  become: true
+
+  roles:
+    - { role: rd_ans_common, tags: install_app }
+
+- name: Playbook to deploy haproxy
+  hosts: frontends
+  become: true
+
+  roles:
+    - { role: rd_install_haproxy, tags: install_app }
+    - { role: rd_config_haproxy, tags: install_app }
+
+- name: Playbook to deploy tomcat
+  hosts: apps
+  become: true
+
+  roles:
+    - { role: rd_install_tomcat, tags: install_app }
+    - { role: rd_config_tomcat, tags: install_app }
+    - { role: rd_setup_dbclient, tags: install_app }
+
+- name: Playbook to setup PostgreSQL DB
+  hosts: appdbs
+  become: true
+
+  roles:
+    - { role: rd_setup_appdb, tags: install_app }
+    - { role: rd_config_app_db, tags: install_app }
+

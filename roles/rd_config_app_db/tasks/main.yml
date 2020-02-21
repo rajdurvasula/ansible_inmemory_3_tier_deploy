@@ -1,0 +1,6 @@
+---
+# tasks file for rd_config_app_db
+#
+
+- name: Include Task to execute Application DB Scripts
+  include: config_app_db.yml
